@@ -1,0 +1,5 @@
+weather
+*.exe
+*.exe~
+go.work
+.DS_Store
