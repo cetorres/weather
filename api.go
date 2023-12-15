@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
-// API key: get yours at https://home.openweathermap.org/users/sign_up
-const WEATHER_API_KEY = ""
 const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=%s"
 
 type Weather struct {
@@ -39,24 +38,27 @@ func getWeather(city string, unit string) Weather {
 		unit = "imperial"
 	}
 
-	res, err := http.Get(fmt.Sprintf(WEATHER_API_URL, city, WEATHER_API_KEY, unit))
+	res, err := http.Get(fmt.Sprintf(WEATHER_API_URL, city, os.Getenv("WEATHER_API_KEY"), unit))
 	if err != nil {
 		panic(err)
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		panic(fmt.Sprintf("Weather API is not available. Error: %s.", res.Status))
+		printError(fmt.Sprintf("Could not access the Weather API. %s.", res.Status))
+		os.Exit(1)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		printError(fmt.Sprintf("Could not read the API response. %s.", err))
+		os.Exit(1)
 	}
 
 	var weather Weather
 	err = json.Unmarshal(body, &weather)
 	if err != nil {
-		panic(err)
+		printError(fmt.Sprintf("Could not convert the API response. %s.", err))
+		os.Exit(1)
 	}
 
 	return weather

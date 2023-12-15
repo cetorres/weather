@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 func getIcon(condition string) string {
@@ -33,4 +37,19 @@ func getIcon(condition string) string {
 	}
 
 	return icon
+}
+
+func printError(err string) {
+	fmt.Print(LOGO)
+	fmt.Println(TITLE)
+	color.Red(fmt.Sprintf("ERROR: %s", err))
+}
+
+func printHelp() {
+	fmt.Println(DESCRIPTION)
+	if os.Getenv("WEATHER_API_KEY") == "" {
+		color.Red("\nERROR: WEATHER_API_KEY is missing.")
+		os.Exit(1)
+	}
+	os.Exit(0)
 }

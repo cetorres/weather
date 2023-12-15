@@ -31,32 +31,33 @@ Units:
 
 Pro tip:
 	You can set environment variables:
-	- WEATHER_CITY_NAME="New York"
-	- WEATHER_UNIT=C
+	- export WEATHER_CITY_NAME="New York"
+	- export WEATHER_UNIT=C
 	And avoid typing parameters everytime.
 
-Uses the OpenWeather API (https://openweathermap.org)`, LOGO, TITLE)
+Uses the OpenWeather API (https://openweathermap.org):
+	- Get your API key at https://home.openweathermap.org/users/sign_up
+	- Set an environment variable: export WEATHER_API_KEY=<your_key_here>`, LOGO, TITLE)
 
 func main() {
-	// Check for WEATHER_API_KEY
-	if WEATHER_API_KEY == "" {
-		fmt.Printf("%s%s\n\n", LOGO, TITLE)
-		color.Red("WEATHER_API_KEY is missing.")
-		color.Yellow("-> Get yours at https://home.openweathermap.org/users/sign_up\n\n")
-		os.Exit(0)
+	// Check arguments, API key, and show help
+	if (len(os.Args) < 2 && os.Getenv("WEATHER_CITY_NAME") == "") || os.Getenv("WEATHER_API_KEY") == "" {
+		printHelp()
 	}
 
-	// Check arguments and show help
-	if len(os.Args) < 2 && os.Getenv("WEATHER_CITY_NAME") == "" {
-		fmt.Println(DESCRIPTION)
-		os.Exit(0)
+	// Check for help argument to show help
+	if len(os.Args) == 2 && (os.Args[1] == "-h" || os.Args[1] == "--help") {
+		printHelp()
 	}
 	
 	// Get city name
 	city := ""
 	if os.Getenv("WEATHER_CITY_NAME") != "" {
 		city = os.Getenv("WEATHER_CITY_NAME")
-	} else {
+	} 
+	if len(os.Args) >= 2 && os.Args[1] != "" {
+		// If the city argument exists it 
+		// overrides the environment variable
 		city = os.Args[1]
 	}
 	
@@ -65,10 +66,11 @@ func main() {
 	speedUnit := "mph"
 	if os.Getenv("WEATHER_UNIT") != "" {
 		unit = strings.ToUpper(os.Getenv("WEATHER_UNIT"))
-	} else {
-		if len(os.Args) == 3 {
-			unit = strings.ToUpper(os.Args[2])
-		}
+	}
+	if len(os.Args) > 2 && os.Args[2] != "" {
+		// If the unit argument exists it 
+		// overrides the environment variable
+		unit = strings.ToUpper(os.Args[2])
 	}
 	if unit == "C" {
 		speedUnit = "m/s"
