@@ -80,7 +80,7 @@ func main() {
 	weather := getWeather(city, unit)
 
 	// Get condition icon
-	icon := getIcon(weather.Weather[0].Description)
+	icon := getIcon(weather.Weather[0].Description, weather.Timezone)
 
 	// Print weather conditions
 	titleColor := color.New(color.BgHiBlue, color.Bold)

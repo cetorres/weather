@@ -9,18 +9,18 @@ import (
 	"github.com/fatih/color"
 )
 
-func getIcon(condition string) string {
+func getIcon(condition string, timezone int) string {
 	icon := ""
 	if strings.Contains(strings.ToLower(condition), "snow") {
 		icon = "❄️  "
 	} else if strings.Contains(strings.ToLower(condition), "few clouds") {
 		icon = "🌥️  "
 	} else if strings.Contains(strings.ToLower(condition), "clear sky") {
-		currentHour := time.Now().Hour()
-		if currentHour < 6 || currentHour > 18 {
+		currentHour := time.Now().UTC().Add(time.Second * time.Duration(timezone)).Hour()
+		if currentHour < 6 || currentHour >= 18 {
 			icon = "⚪️ "
 		} else {
-			icon = "☀️ "
+			icon = "☀️  "
 		}
 	} else if strings.Contains(strings.ToLower(condition), "clouds") {
 		icon = "☁️  "

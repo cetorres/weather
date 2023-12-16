@@ -29,6 +29,7 @@ type Weather struct {
 	Sys struct {
 		Country string `json:"country"`
 	} `json:"sys"`
+	Timezone int `json:"timezone"`
 }
 
 func getWeather(city string, unit string) Weather {
@@ -44,7 +45,13 @@ func getWeather(city string, unit string) Weather {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		printError(fmt.Sprintf("Could not access the Weather API. %s.", res.Status))
+		if res.StatusCode == 401 {
+			printError(fmt.Sprintf("Could not access the Weather API (%s).", res.Status))
+		} else if res.StatusCode == 404 {
+			printError(fmt.Sprintf("Could not find city \"%s\" (%s).", city, res.Status))
+		} else {
+			printError(res.Status)
+		}
 		os.Exit(1)
 	}
 
